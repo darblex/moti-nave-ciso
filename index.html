@@ -532,6 +532,107 @@
     nav .nav-links { display:none; }
     .hero-stats { gap:30px; }
   }
+
+
+  /* ─── WORLD-CLASS UPGRADE LAYER ─── */
+  :root { --lime:#8cff5a; --amber:#ffbf47; --ice:#dffbff; --violet:#a855f7; }
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(0,245,255,.18), transparent 28%),
+      radial-gradient(circle at 82% 12%, rgba(255,0,110,.12), transparent 28%),
+      radial-gradient(circle at 52% 80%, rgba(123,47,255,.16), transparent 34%),
+      linear-gradient(120deg, rgba(255,255,255,.02), transparent 40%);
+    mix-blend-mode:screen;
+  }
+  body::after {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:3; opacity:.12;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");
+  }
+  #hero { padding-top:110px; }
+  #hero::before {
+    content:''; position:absolute; width:min(980px,90vw); height:min(980px,90vw); border-radius:50%;
+    border:1px solid rgba(0,245,255,.12); box-shadow:inset 0 0 80px rgba(0,245,255,.04), 0 0 140px rgba(123,47,255,.08);
+    animation:heroHalo 18s linear infinite; transform:rotateX(62deg); pointer-events:none;
+  }
+  #hero::after {
+    content:''; position:absolute; inset:auto 5vw 9vh 5vw; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(0,245,255,.65),rgba(255,0,110,.5),transparent);
+    filter:blur(.4px); opacity:.65;
+  }
+  .hero-badge { box-shadow:inset 0 0 20px rgba(0,245,255,.08), 0 0 40px rgba(0,245,255,.08); }
+  .hero-title { letter-spacing:-.04em; }
+  .hero-title .glitch { background:linear-gradient(125deg,#fff 0%,#eaffff 24%,var(--neon) 42%,#b287ff 62%,#fff 86%); -webkit-background-clip:text; background-clip:text; }
+  .hero-desc { max-width:880px; color:rgba(238,252,255,.72); text-wrap:balance; }
+  .hero-proof { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin:22px auto 0; }
+  .hero-proof span {
+    font-family:'Orbitron',monospace; font-size:10px; letter-spacing:.18em; color:rgba(223,251,255,.78);
+    border:1px solid rgba(223,251,255,.12); border-radius:999px; padding:8px 12px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+    box-shadow:0 8px 28px rgba(0,0,0,.2);
+  }
+  .command-center {
+    width:min(1050px,94vw); margin:44px auto 0; border-radius:22px; overflow:hidden; position:relative;
+    background:linear-gradient(135deg,rgba(4,14,25,.82),rgba(7,2,18,.78));
+    border:1px solid rgba(0,245,255,.22); box-shadow:0 35px 110px rgba(0,0,0,.5), 0 0 80px rgba(0,245,255,.08), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(18px); transform-style:preserve-3d;
+  }
+  .command-center::before { content:''; position:absolute; inset:-2px; background:conic-gradient(from 180deg, transparent, rgba(0,245,255,.45), transparent, rgba(255,0,110,.35), transparent); opacity:.22; animation:spinGlow 7s linear infinite; z-index:-1; }
+  .cc-topbar { height:48px; display:flex; align-items:center; gap:10px; padding:0 18px; border-bottom:1px solid rgba(0,245,255,.14); background:rgba(255,255,255,.035); direction:ltr; }
+  .cc-topbar strong { margin-left:8px; font-family:'Orbitron',monospace; font-size:11px; letter-spacing:.18em; color:rgba(223,251,255,.8); }
+  .cc-dot { width:10px; height:10px; border-radius:50%; display:inline-block; box-shadow:0 0 14px currentColor; }
+  .cc-dot.red{background:#ff4d6d;color:#ff4d6d}.cc-dot.amber{background:#ffbf47;color:#ffbf47}.cc-dot.green{background:#8cff5a;color:#8cff5a}
+  .cc-grid { display:grid; grid-template-columns:1.05fr 1.4fr .8fr; grid-template-rows:150px 92px; gap:12px; padding:14px; direction:ltr; }
+  .cc-panel { position:relative; overflow:hidden; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015)); }
+  .cc-panel::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent,rgba(255,255,255,.08),transparent); transform:translateX(-120%); animation:glassSweep 5s ease-in-out infinite; }
+  .cc-orb-panel { grid-row:span 2; display:grid; place-items:center; min-height:250px; }
+  .orb-core { width:120px; height:120px; border-radius:50%; display:grid; place-items:center; color:#001017; font-family:'Orbitron'; font-weight:900; font-size:30px; background:radial-gradient(circle at 35% 28%,#fff,var(--neon) 32%,#513cff 70%,#0b0f2b); box-shadow:0 0 80px rgba(0,245,255,.45), inset -12px -18px 35px rgba(0,0,0,.32); animation:orbPulse 3s ease-in-out infinite; }
+  .orbit { position:absolute; width:190px; height:68px; border:1px solid rgba(0,245,255,.35); border-radius:50%; }
+  .orbit-a{transform:rotate(18deg);animation:orbitA 9s linear infinite}.orbit-b{transform:rotate(78deg);animation:orbitB 10s linear infinite}.orbit-c{transform:rotate(-34deg);animation:orbitC 7s linear infinite;border-color:rgba(255,0,110,.32)}
+  .terminal-panel { padding:22px; font-family:'Orbitron',monospace; font-size:12px; text-align:left; color:rgba(223,251,255,.74); display:flex; flex-direction:column; justify-content:center; gap:10px; }
+  .terminal-line { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .terminal-line.warning{color:var(--amber)} .terminal-line.good{color:var(--lime)}
+  .metric-panel { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px; }
+  .metric-mini { border-radius:12px; border:1px solid rgba(0,245,255,.12); display:flex; flex-direction:column; justify-content:center; align-items:center; background:rgba(0,245,255,.035); }
+  .metric-mini b{font-family:'Orbitron';font-size:36px;color:var(--neon);line-height:1;text-shadow:0 0 24px rgba(0,245,255,.65)} .metric-mini span{font-family:'Orbitron';font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.42);margin-top:8px}
+  .waveform-panel { grid-column:span 2; padding:20px; display:flex; align-items:center; }
+  .wave-bars { height:54px; width:100%; display:flex; gap:5px; align-items:center; justify-content:center; }
+  .wave-bars i { width:5px; height:18px; border-radius:10px; background:linear-gradient(180deg,var(--neon),var(--violet)); box-shadow:0 0 18px rgba(0,245,255,.35); animation:wave 1.25s ease-in-out infinite; opacity:.78; }
+  .wave-bars i:nth-child(3n){animation-delay:.12s}.wave-bars i:nth-child(4n){animation-delay:.24s}.wave-bars i:nth-child(5n){animation-delay:.38s;height:34px}.wave-bars i:nth-child(7n){animation-delay:.5s;height:44px;background:linear-gradient(180deg,var(--neon3),var(--amber))}
+  .threat-ticker { border-top:1px solid rgba(0,245,255,.12); height:38px; display:flex; align-items:center; overflow:hidden; direction:ltr; background:rgba(0,0,0,.24); }
+  .threat-ticker span { font-family:'Orbitron'; font-size:10px; letter-spacing:.2em; color:rgba(223,251,255,.62); white-space:nowrap; animation:ticker 18s linear infinite; }
+
+  #war-room { background:radial-gradient(circle at 18% 12%,rgba(0,245,255,.1),transparent 34%),linear-gradient(180deg,#010408,#030914 52%,#05020d); overflow:hidden; }
+  #war-room::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,245,255,.035) 1px,transparent 1px),linear-gradient(rgba(0,245,255,.028) 1px,transparent 1px); background-size:72px 72px; mask-image:radial-gradient(circle at 50% 50%,#000,transparent 78%); }
+  .war-layout { display:grid; grid-template-columns:1fr 1.05fr; gap:70px; align-items:center; position:relative; z-index:1; }
+  .war-pill-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .war-pill-row span { font-family:'Orbitron';font-size:10px;letter-spacing:.16em;color:rgba(223,251,255,.72);padding:10px 13px;border:1px solid rgba(0,245,255,.16);border-radius:999px;background:rgba(0,245,255,.035); }
+  .war-dashboard { min-height:520px; border:1px solid rgba(0,245,255,.2); border-radius:26px; background:linear-gradient(145deg,rgba(4,15,26,.72),rgba(7,2,18,.7)); box-shadow:0 35px 90px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08); padding:22px; position:relative; overflow:hidden; backdrop-filter:blur(16px); }
+  .war-dashboard::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(0,245,255,.15),transparent 40%);}
+  .dash-head { position:relative; z-index:1; display:flex; justify-content:space-between; direction:ltr; font-family:'Orbitron'; font-size:11px; letter-spacing:.18em; color:rgba(223,251,255,.62); }
+  .dash-head b { color:var(--lime); text-shadow:0 0 18px var(--lime); }
+  .radar-wrap { width:min(360px,80vw); height:min(360px,80vw); border-radius:50%; margin:44px auto 30px; position:relative; border:1px solid rgba(0,245,255,.18); background:radial-gradient(circle,rgba(0,245,255,.12) 0 2px, transparent 3px), radial-gradient(circle,rgba(0,245,255,.05),transparent 68%); overflow:hidden; }
+  .radar-sweep { position:absolute; inset:50% 50% 0 0; transform-origin:100% 0; background:linear-gradient(45deg,rgba(0,245,255,.58),transparent 70%); animation:radar 3.1s linear infinite; }
+  .radar-ring{position:absolute;inset:12%;border:1px solid rgba(0,245,255,.13);border-radius:50%}.radar-ring.r2{inset:28%}.radar-ring.r3{inset:44%}
+  .radar-blip{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--neon);box-shadow:0 0 22px var(--neon);animation:blip 2.2s ease-in-out infinite}.radar-blip.b1{top:31%;left:62%}.radar-blip.b2{top:61%;left:35%;animation-delay:.55s;background:var(--amber);box-shadow:0 0 22px var(--amber)}.radar-blip.b3{top:45%;left:77%;animation-delay:1.1s;background:var(--lime);box-shadow:0 0 22px var(--lime)}
+  .dash-cards { position:relative; z-index:1; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .dash-cards div { border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:14px 10px; background:rgba(255,255,255,.035); text-align:center; }
+  .dash-cards strong { display:block; font-family:'Orbitron';font-size:11px;color:#fff;margin-bottom:8px; } .dash-cards em { font-style:normal;font-family:'Orbitron';font-size:9px;color:var(--neon);letter-spacing:.14em; }
+  .premium-strip { margin-top:70px; display:grid; grid-template-columns:repeat(5,1fr); border:1px solid rgba(0,245,255,.12); border-radius:18px; overflow:hidden; background:rgba(255,255,255,.025); position:relative; z-index:1; }
+  .premium-strip div { padding:22px 14px; border-left:1px solid rgba(255,255,255,.06); text-align:center; } .premium-strip b{font-family:'Orbitron';color:var(--neon);display:block;margin-bottom:8px}.premium-strip span{font-family:'Orbitron';font-size:10px;letter-spacing:.16em;color:rgba(255,255,255,.55)}
+
+  .service-card, .ai-feature, .contact-wrap, .profile-hologram, .war-dashboard { will-change:transform; }
+  @keyframes heroHalo{from{transform:rotateX(62deg) rotateZ(0)}to{transform:rotateX(62deg) rotateZ(360deg)}}
+  @keyframes spinGlow{to{transform:rotate(360deg)}}
+  @keyframes glassSweep{0%,65%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+  @keyframes orbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  @keyframes orbitA{to{transform:rotate(378deg)}} @keyframes orbitB{to{transform:rotate(-282deg)}} @keyframes orbitC{to{transform:rotate(326deg)}}
+  @keyframes wave{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1.35)}}
+  @keyframes ticker{from{transform:translateX(-105%)}to{transform:translateX(105%)}}
+  @keyframes radar{to{transform:rotate(360deg)}} @keyframes blip{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+  @media(max-width:900px){ .cc-grid{grid-template-columns:1fr;grid-template-rows:auto}.cc-orb-panel,.waveform-panel{grid-column:auto;grid-row:auto}.war-layout{grid-template-columns:1fr}.dash-cards,.premium-strip{grid-template-columns:1fr 1fr}.command-center{margin-top:30px}.terminal-panel{font-size:10px}.hero-proof span{font-size:9px} }
+  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important} }
+
 </style>
 </head>
 <body>
@@ -568,6 +669,7 @@
     <li><a href="#about">ABOUT</a></li>
     <li><a href="#services">SERVICES</a></li>
     <li><a href="#ai-section">AI SECURITY</a></li>
+    <li><a href="#war-room">WAR ROOM</a></li>
     <li><a href="#process">PROCESS</a></li>
     <li><a href="#contact">CONTACT</a></li>
   </ul>
@@ -585,28 +687,57 @@
     </h1>
     <div class="hero-subtitle type-cursor" id="typed-title">CHIEF INFORMATION SECURITY OFFICER</div>
     <p class="hero-desc">
-      מגן על הארגון שלך עם אסטרטגיות אבטחת מידע מתקדמות. AI-Driven. מוכח. אמין.
+      ארכיטקטורת הגנה ברמת הנהלה: אסטרטגיית סייבר, AI Detection, ניהול סיכונים ותגובה לאירועים — עטופים בחוויית Enterprise שמרגישה עתידנית, חדה ומוכנה למתקפה הבאה.
     </p>
     <div class="cta-group">
-      <a href="#contact" class="btn-primary">צור קשר עכשיו</a>
-      <a href="#services" class="btn-secondary"><span>השירותים שלי</span></a>
+      <a href="#contact" class="btn-primary magnetic">צור קשר עכשיו</a>
+      <a href="#services" class="btn-secondary magnetic"><span>השירותים שלי</span></a>
+    </div>
+    <div class="hero-proof reveal">
+      <span>AI SOC</span><span>Zero‑Trust</span><span>Incident Command</span><span>Executive CISO</span>
+    </div>
+    <div class="command-center reveal" id="commandCenter">
+      <div class="cc-topbar">
+        <span class="cc-dot red"></span><span class="cc-dot amber"></span><span class="cc-dot green"></span>
+        <strong>AI SENTINEL // LIVE DEFENSE CONSOLE</strong>
+      </div>
+      <div class="cc-grid">
+        <div class="cc-panel cc-orb-panel">
+          <div class="orb-core"><span>AI</span></div>
+          <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orbit orbit-c"></div>
+        </div>
+        <div class="cc-panel terminal-panel">
+          <div class="terminal-line">> ingesting threat intel feeds...</div>
+          <div class="terminal-line">> behavior baseline: calibrated</div>
+          <div class="terminal-line warning">> anomaly cluster detected / contained</div>
+          <div class="terminal-line good">> executive risk posture: GREEN</div>
+        </div>
+        <div class="cc-panel metric-panel">
+          <div class="metric-mini"><b id="riskScore">97</b><span>READINESS</span></div>
+          <div class="metric-mini"><b id="latencyScore">03</b><span>SEC RESPONSE</span></div>
+        </div>
+        <div class="cc-panel waveform-panel">
+          <div class="wave-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+      <div class="threat-ticker"><span id="tickerText">THREAT MAP: cloud identity • phishing simulation • endpoint telemetry • dark web signals • compliance drift</span></div>
     </div>
     <div class="hero-stats">
       <div class="stat-item reveal">
-        <span class="stat-num" data-count="15">0</span>
-        <div class="stat-label">ניסיון בכיר</div>
+        <span class="stat-num" data-count="24">0</span>
+        <div class="stat-label">שכבות הגנה</div>
       </div>
       <div class="stat-item reveal" style="transition-delay:0.1s">
-        <span class="stat-num" data-count="200">0</span>
-        <div class="stat-label">פרויקטים</div>
+        <span class="stat-num" data-count="360">0</span>
+        <div class="stat-label">נראות מלאה</div>
       </div>
       <div class="stat-item reveal" style="transition-delay:0.2s">
-        <span class="stat-num" data-count="99">0</span>
-        <div class="stat-label">מיקוד איכות</div>
+        <span class="stat-num" data-count="7">0</span>
+        <div class="stat-label">שכבות AI</div>
       </div>
       <div class="stat-item reveal" style="transition-delay:0.3s">
-        <span class="stat-num" data-count="50">0</span>
-        <div class="stat-label">נכסים קריטיים</div>
+        <span class="stat-num" data-count="1">0</span>
+        <div class="stat-label">מרכז פיקוד</div>
       </div>
     </div>
   </section>
@@ -721,6 +852,43 @@
           <div class="logo-item">CLOUD SECURITY</div>
           <div class="logo-item">GRC & COMPLIANCE</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAR ROOM -->
+  <section id="war-room">
+    <div class="container">
+      <div class="war-layout">
+        <div class="reveal-left">
+          <div class="section-tag">EXECUTIVE CYBER WAR ROOM</div>
+          <h2 class="section-title">לא עוד “בדיקות אבטחה”. מערכת פיקוד.</h2>
+          <p class="section-sub">מוטי נווה בונה שכבת שליטה שמחברת הנהלה, טכנולוגיה, רגולציה ותגובה מבצעית — כדי שכל החלטת אבטחה תהיה מדידה, מהירה וברורה.</p>
+          <div class="war-pill-row">
+            <span>Board Ready Reports</span><span>Risk Heatmap</span><span>Attack Path Modeling</span><span>AI Playbooks</span>
+          </div>
+        </div>
+        <div class="war-dashboard reveal-right">
+          <div class="dash-head"><span>DEFENSE POSTURE</span><b>LIVE</b></div>
+          <div class="radar-wrap">
+            <div class="radar-sweep"></div>
+            <div class="radar-ring r1"></div><div class="radar-ring r2"></div><div class="radar-ring r3"></div>
+            <span class="radar-blip b1"></span><span class="radar-blip b2"></span><span class="radar-blip b3"></span>
+          </div>
+          <div class="dash-cards">
+            <div><strong>Identity</strong><em>HARDENED</em></div>
+            <div><strong>Cloud</strong><em>MONITORED</em></div>
+            <div><strong>Endpoint</strong><em>PROTECTED</em></div>
+            <div><strong>Compliance</strong><em>TRACKED</em></div>
+          </div>
+        </div>
+      </div>
+      <div class="premium-strip reveal">
+        <div><b>01</b><span>Strategy</span></div>
+        <div><b>02</b><span>Architecture</span></div>
+        <div><b>03</b><span>Automation</span></div>
+        <div><b>04</b><span>Response</span></div>
+        <div><b>05</b><span>Governance</span></div>
       </div>
     </div>
   </section>
@@ -1124,6 +1292,56 @@ window.addEventListener('scroll', () => {
     ? 'rgba(1,4,8,0.98)'
     : 'linear-gradient(180deg,rgba(1,4,8,0.95) 0%, transparent 100%)';
 });
+
+// ─── WORLD-CLASS INTERACTIONS ────────────────────────
+(function(){
+  const center = document.getElementById('commandCenter');
+  if (center) {
+    center.addEventListener('mousemove', (e) => {
+      const r = center.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top) / r.height - .5;
+      center.style.transform = `perspective(1100px) rotateX(${(-y*5).toFixed(2)}deg) rotateY(${(x*6).toFixed(2)}deg) translateY(-2px)`;
+    });
+    center.addEventListener('mouseleave', () => { center.style.transform = 'perspective(1100px) rotateX(0) rotateY(0)'; });
+  }
+
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width/2;
+      const y = e.clientY - r.top - r.height/2;
+      btn.style.transform = `translate(${x*.12}px,${y*.18}px) translateY(-3px)`;
+    });
+    btn.addEventListener('mouseleave', () => btn.style.transform = 'translate(0,0)');
+  });
+
+  document.querySelectorAll('.service-card,.ai-feature,.war-dashboard,.contact-wrap').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+      card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+    });
+  });
+
+  const ticker = document.getElementById('tickerText');
+  if (ticker) {
+    const feeds = [
+      'THREAT MAP: cloud identity • phishing simulation • endpoint telemetry • dark web signals • compliance drift',
+      'AI PLAYBOOK: detect → triage → isolate → report → improve',
+      'EXECUTIVE VIEW: risk heatmap • board language • business impact • measured exposure',
+      'ZERO TRUST: least privilege • device posture • identity proofing • continuous verification'
+    ];
+    let i=0; setInterval(()=>{ i=(i+1)%feeds.length; ticker.textContent=feeds[i]; }, 5200);
+  }
+
+  const rs = document.getElementById('riskScore'), ls = document.getElementById('latencyScore');
+  setInterval(()=>{
+    if(rs) rs.textContent = String(94 + Math.floor(Math.random()*5)).padStart(2,'0');
+    if(ls) ls.textContent = String(2 + Math.floor(Math.random()*4)).padStart(2,'0');
+  }, 1600);
+})();
+
 </script>
 </body>
 </html>
