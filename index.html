@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>מוטי נווה | CISO 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --neon: #00f5ff;
+    --neon2: #7b2fff;
+    --neon3: #ff006e;
+    --gold: #ffd700;
+    --dark: #010408;
+    --panel: rgba(0,245,255,0.05);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--dark);
+    color: #e0f7fa;
+    font-family: 'Heebo', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ─── CANVAS BG ─── */
+  #bg-canvas {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    z-index:0; pointer-events:none;
+  }
+
+  /* ─── PRELOADER ─── */
+  #preloader {
+    position:fixed; inset:0; background:#010408; z-index:9999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  #preloader .logo-text {
+    font-family:'Orbitron', monospace; font-size:clamp(20px,4vw,48px);
+    color:var(--neon); letter-spacing:0.3em;
+    text-shadow:0 0 30px var(--neon), 0 0 60px var(--neon);
+    animation: flickerIn 0.8s ease forwards;
+  }
+  #preloader .bar-wrap {
+    width:300px; height:3px; background:rgba(0,245,255,0.2);
+    margin-top:30px; border-radius:2px; overflow:hidden;
+  }
+  #preloader .bar { height:100%; background:linear-gradient(90deg,var(--neon2),var(--neon),var(--neon3));
+    width:0; transition:width 1.5s ease; border-radius:2px; }
+  #preloader .status {
+    font-family:'Orbitron',monospace; font-size:12px; color:var(--neon);
+    margin-top:12px; letter-spacing:0.2em; opacity:0.7;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:20px 40px; display:flex; align-items:center; justify-content:space-between;
+    background:linear-gradient(180deg,rgba(1,4,8,0.95) 0%, transparent 100%);
+    border-bottom:1px solid rgba(0,245,255,0.1);
+    backdrop-filter:blur(10px);
+  }
+  nav .brand {
+    font-family:'Orbitron',monospace; font-size:18px; font-weight:900;
+    color:var(--neon); letter-spacing:0.2em;
+    text-shadow:0 0 15px var(--neon);
+  }
+  nav .nav-links { display:flex; gap:30px; list-style:none; }
+  nav .nav-links a {
+    color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;
+    letter-spacing:0.1em; font-family:'Orbitron',monospace; font-size:11px;
+    transition:all 0.3s; position:relative; padding-bottom:4px;
+  }
+  nav .nav-links a::after {
+    content:''; position:absolute; bottom:0; left:0; width:0; height:1px;
+    background:var(--neon); transition:width 0.3s;
+  }
+  nav .nav-links a:hover { color:var(--neon); text-shadow:0 0 10px var(--neon); }
+  nav .nav-links a:hover::after { width:100%; }
+
+  /* ─── SECTIONS WRAPPER ─── */
+  .sections { position:relative; z-index:1; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:0 20px; position:relative; overflow:hidden;
+    text-align:center;
+  }
+
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(0,245,255,0.08); border:1px solid rgba(0,245,255,0.3);
+    border-radius:50px; padding:8px 20px; margin-bottom:30px;
+    font-size:12px; font-family:'Orbitron',monospace; letter-spacing:0.2em;
+    color:var(--neon); animation:pulseGlow 2s infinite;
+  }
+  .hero-badge .dot { width:8px; height:8px; background:var(--neon); border-radius:50%;
+    animation:blink 1s infinite; }
+
+  .hero-title {
+    font-family:'Heebo',sans-serif; font-weight:900;
+    font-size:clamp(48px,10vw,120px); line-height:1; margin-bottom:10px;
+    position:relative;
+  }
+  .hero-title .glitch {
+    display:inline-block; position:relative;
+    background:linear-gradient(135deg,#fff 0%,var(--neon) 50%,var(--neon2) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; filter:drop-shadow(0 0 20px var(--neon));
+  }
+  .hero-title .glitch::before,
+  .hero-title .glitch::after {
+    content:attr(data-text); position:absolute; top:0; left:0;
+    background:inherit; -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .hero-title .glitch::before {
+    animation:glitch1 3s infinite; clip-path:polygon(0 0,100% 0,100% 35%,0 35%);
+    transform:translateX(-3px); filter:drop-shadow(2px 0 var(--neon3));
+  }
+  .hero-title .glitch::after {
+    animation:glitch2 3s infinite; clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);
+    transform:translateX(3px); filter:drop-shadow(-2px 0 var(--neon2));
+  }
+
+  .hero-subtitle {
+    font-family:'Orbitron',monospace; font-size:clamp(14px,2.5vw,22px);
+    color:var(--neon); letter-spacing:0.4em; margin-bottom:20px;
+    opacity:0.9; text-shadow:0 0 20px var(--neon);
+  }
+
+  .hero-desc {
+    font-size:clamp(15px,1.8vw,20px); color:rgba(255,255,255,0.6);
+    max-width:700px; line-height:1.8; margin:0 auto 50px;
+  }
+
+  .cta-group { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+  .btn-primary {
+    position:relative; padding:16px 40px; font-family:'Orbitron',monospace;
+    font-size:13px; letter-spacing:0.2em; color:#000; font-weight:700;
+    background:linear-gradient(135deg,var(--neon),var(--neon2));
+    border:none; border-radius:4px; cursor:pointer; overflow:hidden;
+    transition:all 0.3s; text-decoration:none; display:inline-block;
+    clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  }
+  .btn-primary:hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 40px rgba(0,245,255,0.5), 0 0 80px rgba(0,245,255,0.2);
+  }
+  .btn-secondary {
+    padding:16px 40px; font-family:'Orbitron',monospace;
+    font-size:13px; letter-spacing:0.2em; color:var(--neon);
+    background:transparent; border:1px solid var(--neon); border-radius:4px;
+    cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-block;
+    clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    position:relative; overflow:hidden;
+  }
+  .btn-secondary::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,var(--neon),var(--neon2));
+    opacity:0; transition:opacity 0.3s;
+  }
+  .btn-secondary:hover { color:#000; }
+  .btn-secondary:hover::before { opacity:1; }
+  .btn-secondary span { position:relative; z-index:1; }
+
+  /* scan line */
+  .scanline {
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,transparent,var(--neon),transparent);
+    animation:scanDown 4s linear infinite; opacity:0.4; pointer-events:none;
+  }
+
+  /* hero stats */
+  .hero-stats {
+    display:flex; gap:60px; margin-top:70px; justify-content:center;
+    flex-wrap:wrap;
+  }
+  .stat-item { text-align:center; }
+  .stat-num {
+    font-family:'Orbitron',monospace; font-size:clamp(28px,4vw,48px); font-weight:900;
+    color:var(--neon); text-shadow:0 0 20px var(--neon);
+    display:block;
+  }
+  .stat-label { font-size:12px; color:rgba(255,255,255,0.5); letter-spacing:0.2em;
+    font-family:'Orbitron',monospace; margin-top:5px; }
+
+  /* ─── SECTION COMMON ─── */
+  section { padding:120px 20px; position:relative; }
+  .section-tag {
+    font-family:'Orbitron',monospace; font-size:11px; letter-spacing:0.4em;
+    color:var(--neon); margin-bottom:15px; display:flex; align-items:center; gap:10px;
+  }
+  .section-tag::before { content:''; width:30px; height:1px; background:var(--neon); }
+  .section-title {
+    font-family:'Heebo',sans-serif; font-weight:900;
+    font-size:clamp(30px,5vw,64px); line-height:1.1; margin-bottom:20px;
+  }
+  .section-sub { font-size:18px; color:rgba(255,255,255,0.5); max-width:600px; line-height:1.7; }
+  .container { max-width:1200px; margin:0 auto; }
+
+  /* ─── ABOUT ─── */
+  #about { background:linear-gradient(180deg,var(--dark) 0%, #02080f 100%); }
+  .about-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:80px;
+    align-items:center; margin-top:60px;
+  }
+  @media(max-width:768px){ .about-grid { grid-template-columns:1fr; } }
+
+  .profile-frame {
+    position:relative; width:340px; height:420px; margin:0 auto;
+  }
+  .profile-hologram {
+    width:100%; height:100%;
+    background:linear-gradient(135deg,rgba(0,245,255,0.05),rgba(123,47,255,0.1));
+    border:1px solid rgba(0,245,255,0.3); border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .profile-hologram::before {
+    content:''; position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.03) 2px,rgba(0,245,255,0.03) 4px);
+    pointer-events:none;
+  }
+  .profile-inner {
+    text-align:center; z-index:1;
+  }
+  .avatar-ring {
+    width:140px; height:140px; border-radius:50%; margin:0 auto 20px;
+    background:linear-gradient(135deg,var(--neon),var(--neon2),var(--neon3));
+    padding:3px; animation:rotateRing 8s linear infinite;
+    position:relative;
+  }
+  .avatar-inner {
+    width:100%; height:100%; border-radius:50%;
+    background:linear-gradient(135deg,#0a1628,#0d1f3c);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Orbitron',monospace; font-size:42px; font-weight:900;
+    color:var(--neon); text-shadow:0 0 20px var(--neon);
+  }
+  .profile-name { font-family:'Heebo',sans-serif; font-weight:900; font-size:26px;
+    color:#fff; margin-bottom:6px; }
+  .profile-title-tag {
+    font-family:'Orbitron',monospace; font-size:11px; color:var(--neon);
+    letter-spacing:0.2em; padding:6px 16px; border:1px solid var(--neon);
+    border-radius:4px; display:inline-block; margin-top:8px;
+    background:rgba(0,245,255,0.05);
+  }
+
+  .frame-corner {
+    position:absolute; width:20px; height:20px;
+    border-color:var(--neon); border-style:solid;
+  }
+  .frame-corner.tl { top:-2px; left:-2px; border-width:2px 0 0 2px; }
+  .frame-corner.tr { top:-2px; right:-2px; border-width:2px 2px 0 0; }
+  .frame-corner.bl { bottom:-2px; left:-2px; border-width:0 0 2px 2px; }
+  .frame-corner.br { bottom:-2px; right:-2px; border-width:0 2px 2px 0; }
+
+  .hud-badge {
+    position:absolute; font-family:'Orbitron',monospace; font-size:9px;
+    color:var(--neon); background:rgba(0,245,255,0.08);
+    border:1px solid rgba(0,245,255,0.3); padding:4px 10px;
+    letter-spacing:0.15em; animation:floatBadge 3s ease-in-out infinite;
+  }
+  .hud-badge.b1 { bottom:20px; right:-20px; animation-delay:0s; }
+  .hud-badge.b2 { top:60px; left:-20px; animation-delay:1s; }
+  .hud-badge.b3 { top:160px; right:-25px; animation-delay:2s; }
+
+  .about-text .tag { color:var(--neon); font-weight:700; }
+  .about-bullets { list-style:none; margin-top:30px; }
+  .about-bullets li {
+    padding:14px 0; border-bottom:1px solid rgba(0,245,255,0.08);
+    display:flex; align-items:flex-start; gap:12px; font-size:16px; color:rgba(255,255,255,0.75);
+    line-height:1.6;
+  }
+  .about-bullets li .icon {
+    min-width:24px; height:24px; background:linear-gradient(135deg,var(--neon),var(--neon2));
+    border-radius:4px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:#000; font-weight:700; margin-top:2px;
+  }
+
+  /* ─── SERVICES ─── */
+  #services { background:#010408; }
+  .services-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:24px; margin-top:60px;
+  }
+  .service-card {
+    position:relative; padding:36px; overflow:hidden;
+    background:var(--panel); border:1px solid rgba(0,245,255,0.1);
+    border-radius:8px; transition:all 0.4s; cursor:default;
+    group:true;
+  }
+  .service-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--neon),transparent);
+    transform:translateX(-100%); transition:transform 0.5s;
+  }
+  .service-card:hover::before { transform:translateX(100%); }
+  .service-card:hover {
+    border-color:rgba(0,245,255,0.4); transform:translateY(-8px);
+    box-shadow:0 20px 60px rgba(0,245,255,0.1), 0 0 40px rgba(0,245,255,0.05);
+  }
+  .service-card::after {
+    content:''; position:absolute; inset:0; opacity:0;
+    background:radial-gradient(ellipse at 50% 0%,rgba(0,245,255,0.08),transparent 70%);
+    transition:opacity 0.4s;
+  }
+  .service-card:hover::after { opacity:1; }
+  .service-icon {
+    width:60px; height:60px; margin-bottom:20px;
+    background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.1));
+    border:1px solid rgba(0,245,255,0.2); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; font-size:26px;
+  }
+  .service-card h3 {
+    font-family:'Heebo',sans-serif; font-weight:900; font-size:20px;
+    margin-bottom:12px; color:#fff;
+  }
+  .service-card p { font-size:15px; color:rgba(255,255,255,0.55); line-height:1.7; }
+  .service-num {
+    position:absolute; top:20px; left:20px;
+    font-family:'Orbitron',monospace; font-size:11px; color:rgba(0,245,255,0.3);
+  }
+
+  /* ─── AI SECTION ─── */
+  #ai-section {
+    background:linear-gradient(135deg,#02080f 0%,#060112 50%,#02080f 100%);
+    position:relative; overflow:hidden;
+  }
+  #ai-section::before {
+    content:''; position:absolute; width:600px; height:600px;
+    background:radial-gradient(circle,rgba(123,47,255,0.15),transparent 70%);
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .ai-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px;
+    align-items:center; margin-top:60px; }
+  @media(max-width:768px){ .ai-grid { grid-template-columns:1fr; } }
+
+  .neural-canvas-wrap { position:relative; height:400px; }
+  #neural-canvas { width:100%; height:100%; border-radius:8px;
+    border:1px solid rgba(123,47,255,0.2); }
+
+  .ai-features { display:flex; flex-direction:column; gap:20px; }
+  .ai-feature {
+    padding:20px 24px; background:rgba(123,47,255,0.06);
+    border:1px solid rgba(123,47,255,0.15); border-radius:6px;
+    display:flex; gap:16px; align-items:flex-start;
+    transition:all 0.3s;
+  }
+  .ai-feature:hover { border-color:rgba(123,47,255,0.5);
+    box-shadow:0 0 30px rgba(123,47,255,0.1); transform:translateX(-6px); }
+  .ai-feature .icon2 { font-size:24px; min-width:40px; }
+  .ai-feature h4 { font-weight:700; margin-bottom:4px; color:rgba(255,255,255,0.9); }
+  .ai-feature p { font-size:14px; color:rgba(255,255,255,0.5); line-height:1.6; }
+
+  /* ─── CLIENTS / LOGOS ─── */
+  #clients { background:#010408; padding:80px 20px; overflow:hidden; }
+  .clients-title { text-align:center; font-family:'Orbitron',monospace;
+    font-size:12px; letter-spacing:0.4em; color:rgba(255,255,255,0.3);
+    margin-bottom:40px; }
+  .logos-track { display:flex; gap:60px; animation:scrollLogos 20s linear infinite;
+    white-space:nowrap; }
+  .logos-track2 { animation-direction:reverse; }
+  .logo-item {
+    font-family:'Orbitron',monospace; font-size:13px; color:rgba(255,255,255,0.2);
+    letter-spacing:0.2em; white-space:nowrap; transition:color 0.3s;
+    padding:10px 30px; border:1px solid rgba(255,255,255,0.05);
+    border-radius:4px; flex-shrink:0;
+  }
+  .logo-item:hover { color:var(--neon); border-color:rgba(0,245,255,0.3); }
+
+  /* ─── PROCESS ─── */
+  #process {
+    background:linear-gradient(180deg,#02080f 0%,var(--dark) 100%);
+  }
+  .process-steps { display:flex; gap:0; margin-top:60px; position:relative; }
+  .process-steps::before {
+    content:''; position:absolute; top:38px; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,var(--neon),var(--neon2),var(--neon3),transparent);
+    opacity:0.3;
+  }
+  .step {
+    flex:1; text-align:center; padding:0 20px; position:relative;
+  }
+  .step-num {
+    width:76px; height:76px; border-radius:50%; margin:0 auto 20px;
+    background:linear-gradient(135deg,var(--neon),var(--neon2));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Orbitron',monospace; font-size:20px; font-weight:900;
+    color:#000; position:relative; z-index:1;
+    box-shadow:0 0 30px rgba(0,245,255,0.3);
+    animation:pulseNum 3s ease-in-out infinite;
+  }
+  .step-num:nth-child(1){ animation-delay:0s; }
+  .step h4 { font-weight:900; font-size:18px; margin-bottom:10px; }
+  .step p { font-size:14px; color:rgba(255,255,255,0.5); line-height:1.6; }
+  @media(max-width:768px){
+    .process-steps { flex-direction:column; gap:40px; }
+    .process-steps::before { display:none; }
+  }
+
+  /* ─── CONTACT ─── */
+  #contact {
+    background:linear-gradient(135deg,var(--dark),#060112);
+    text-align:center;
+  }
+  .contact-wrap {
+    max-width:700px; margin:0 auto;
+    background:rgba(0,245,255,0.03); border:1px solid rgba(0,245,255,0.1);
+    border-radius:12px; padding:60px; margin-top:60px;
+    position:relative; overflow:hidden;
+  }
+  .contact-wrap::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,var(--neon),transparent);
+  }
+  .contact-channels { display:flex; gap:16px; justify-content:center;
+    flex-wrap:wrap; margin-top:40px; }
+  .channel-btn {
+    display:flex; align-items:center; gap:10px; padding:14px 24px;
+    background:rgba(0,245,255,0.05); border:1px solid rgba(0,245,255,0.2);
+    border-radius:6px; color:rgba(255,255,255,0.8); text-decoration:none;
+    font-size:15px; transition:all 0.3s; font-family:'Heebo',sans-serif;
+  }
+  .channel-btn:hover {
+    background:rgba(0,245,255,0.1); border-color:var(--neon);
+    color:var(--neon); transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(0,245,255,0.1);
+  }
+  .channel-btn .icon3 { font-size:20px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background:#000; padding:30px 20px; text-align:center;
+    font-family:'Orbitron',monospace; font-size:11px;
+    color:rgba(255,255,255,0.2); letter-spacing:0.2em;
+    border-top:1px solid rgba(0,245,255,0.05);
+  }
+  footer span { color:var(--neon); }
+
+  /* ─── HUD OVERLAY ─── */
+  .hud-overlay {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:2;
+  }
+  .hud-corner {
+    position:absolute; width:80px; height:80px;
+    border-color:rgba(0,245,255,0.15); border-style:solid;
+  }
+  .hud-corner.tl { top:20px; left:20px; border-width:2px 0 0 2px; }
+  .hud-corner.tr { top:20px; right:20px; border-width:2px 2px 0 0; }
+  .hud-corner.bl { bottom:20px; left:20px; border-width:0 0 2px 2px; }
+  .hud-corner.br { bottom:20px; right:20px; border-width:0 2px 2px 0; }
+
+  .hud-text {
+    position:absolute; font-family:'Orbitron',monospace; font-size:9px;
+    color:rgba(0,245,255,0.2); letter-spacing:0.15em;
+  }
+  .hud-text.ht1 { bottom:30px; left:100px; }
+  .hud-text.ht2 { bottom:30px; right:100px; }
+
+  /* ─── MATRIX RAIN ─── */
+  #matrix-canvas {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    z-index:0; opacity:0.03; pointer-events:none;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes flickerIn {
+    0%{opacity:0;transform:scale(0.95)} 50%{opacity:1;filter:brightness(2)} 100%{opacity:1;filter:brightness(1)}
+  }
+  @keyframes glitch1 {
+    0%,95%,100%{transform:translateX(-3px) scaleY(1)}
+    96%{transform:translateX(3px) scaleY(1.05)}
+    97%{transform:translateX(-6px)}
+    98%{transform:translateX(0)}
+  }
+  @keyframes glitch2 {
+    0%,92%,100%{transform:translateX(3px) scaleY(1)}
+    93%{transform:translateX(-3px) scaleY(0.95)}
+    94%{transform:translateX(6px)}
+    95%{transform:translateX(0)}
+  }
+  @keyframes scanDown {
+    0%{top:-5px} 100%{top:100%}
+  }
+  @keyframes blink {
+    0%,100%{opacity:1} 50%{opacity:0}
+  }
+  @keyframes pulseGlow {
+    0%,100%{box-shadow:0 0 0 rgba(0,245,255,0)} 50%{box-shadow:0 0 20px rgba(0,245,255,0.3)}
+  }
+  @keyframes rotateRing {
+    from{transform:rotate(0)} to{transform:rotate(360deg)}
+  }
+  @keyframes floatBadge {
+    0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)}
+  }
+  @keyframes pulseNum {
+    0%,100%{box-shadow:0 0 30px rgba(0,245,255,0.3)} 50%{box-shadow:0 0 60px rgba(0,245,255,0.7)}
+  }
+  @keyframes scrollLogos {
+    from{transform:translateX(0)} to{transform:translateX(-50%)}
+  }
+
+  /* ─── REVEAL ANIMATIONS ─── */
+  .reveal { opacity:0; transform:translateY(40px); transition:all 0.8s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-left { opacity:0; transform:translateX(-50px); transition:all 0.8s ease; }
+  .reveal-left.visible { opacity:1; transform:translateX(0); }
+  .reveal-right { opacity:0; transform:translateX(50px); transition:all 0.8s ease; }
+  .reveal-right.visible { opacity:1; transform:translateX(0); }
+
+  /* cursor glow */
+  .cursor-glow {
+    width:300px; height:300px; border-radius:50%;
+    background:radial-gradient(circle,rgba(0,245,255,0.04),transparent 70%);
+    position:fixed; pointer-events:none; z-index:1;
+    transform:translate(-50%,-50%); transition:all 0.1s;
+  }
+
+  /* typing cursor */
+  .type-cursor::after { content:'_'; animation:blink 0.7s step-end infinite; color:var(--neon); }
+
+  @media(max-width:900px){
+    nav .nav-links { display:none; }
+    .hero-stats { gap:30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Matrix Canvas -->
+<canvas id="matrix-canvas"></canvas>
+<!-- WebGL BG -->
+<canvas id="bg-canvas"></canvas>
+<!-- Cursor glow -->
+<div class="cursor-glow" id="cursor-glow"></div>
+
+<!-- HUD overlay -->
+<div class="hud-overlay">
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+  <div class="hud-text ht1">CYBER_DEFENSE_ACTIVE // SESSION_SECURE</div>
+  <div class="hud-text ht2">ENCRYPTION_256 // STATUS_GREEN</div>
+</div>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="logo-text">MOTI NAVE</div>
+  <div style="font-family:'Orbitron',monospace;font-size:11px;color:rgba(0,245,255,0.5);letter-spacing:0.4em;margin-top:10px;">CISO // INITIALIZING</div>
+  <div class="bar-wrap"><div class="bar" id="preload-bar"></div></div>
+  <div class="status" id="preload-status">LOADING SECURE ENVIRONMENT...</div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="brand">MN // CISO</div>
+  <ul class="nav-links">
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#services">SERVICES</a></li>
+    <li><a href="#ai-section">AI SECURITY</a></li>
+    <li><a href="#process">PROCESS</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="sections">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="scanline"></div>
+    <div class="hero-badge"><div class="dot"></div>AVAILABLE FOR ENGAGEMENTS 2026</div>
+    <h1 class="hero-title">
+      <span class="glitch" data-text="מוטי נווה">מוטי נווה</span>
+    </h1>
+    <div class="hero-subtitle type-cursor" id="typed-title">CHIEF INFORMATION SECURITY OFFICER</div>
+    <p class="hero-desc">
+      מגן על הארגון שלך עם אסטרטגיות אבטחת מידע מתקדמות. AI-Driven. מוכח. אמין.
+    </p>
+    <div class="cta-group">
+      <a href="#contact" class="btn-primary">צור קשר עכשיו</a>
+      <a href="#services" class="btn-secondary"><span>השירותים שלי</span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item reveal">
+        <span class="stat-num" data-count="15">0</span>
+        <div class="stat-label">שנות ניסיון+</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:0.1s">
+        <span class="stat-num" data-count="200">0</span>
+        <div class="stat-label">ארגונים מוגנים+</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:0.2s">
+        <span class="stat-num" data-count="99">0</span>
+        <div class="stat-label">% שביעות רצון</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:0.3s">
+        <span class="stat-num" data-count="50">0</span>
+        <div class="stat-label">מיליון $ נכסים מוגנים+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="reveal-left">
+          <div class="profile-frame">
+            <div class="profile-hologram">
+              <div class="profile-inner">
+                <div class="avatar-ring">
+                  <div class="avatar-inner">מנ</div>
+                </div>
+                <div class="profile-name">מוטי נווה</div>
+                <div class="profile-title-tag">CISO // CYBER EXPERT</div>
+              </div>
+            </div>
+            <div class="frame-corner tl"></div>
+            <div class="frame-corner tr"></div>
+            <div class="frame-corner bl"></div>
+            <div class="frame-corner br"></div>
+            <div class="hud-badge b1">AI POWERED</div>
+            <div class="hud-badge b2">CERTIFIED</div>
+            <div class="hud-badge b3">CLEARANCE L4</div>
+          </div>
+        </div>
+        <div class="reveal-right">
+          <div class="section-tag">ABOUT ME</div>
+          <h2 class="section-title">מומחה אבטחת מידע מוביל בישראל</h2>
+          <p class="section-sub">
+            מוטי נווה — מנכ"ל ומומחה אבטחת מידע בכיר עם ניסיון נרחב בהגנה על ארגונים מפני איומי סייבר מתקדמים. מוביל אסטרטגיות הגנה AI-Driven בסטנדרטים הגבוהים ביותר.
+          </p>
+          <ul class="about-bullets">
+            <li><div class="icon">✦</div>מנכ"ל וראש תחום אבטחת מידע ארגונית</li>
+            <li><div class="icon">✦</div>מומחה SOC, SIEM ותגובה לאירועי סייבר</li>
+            <li><div class="icon">✦</div>הסמכות: CISSP, CISM, CEH, ISO 27001 Lead Auditor</li>
+            <li><div class="icon">✦</div>יישום AI לזיהוי איומים בזמן אמת</li>
+            <li><div class="icon">✦</div>ייעוץ לחברות Fortune 500 ולממשלות</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <div class="reveal" style="text-align:center">
+        <div class="section-tag" style="justify-content:center">WHAT I DO</div>
+        <h2 class="section-title">שירותים מתקדמים</h2>
+        <p class="section-sub" style="margin:0 auto;">פתרונות אבטחת מידע מקיפים לארגונים מכל הגדלים</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <div class="service-num">01</div>
+          <div class="service-icon">🛡️</div>
+          <h3>ניהול סיכוני סייבר</h3>
+          <p>הערכת סיכונים מקיפה, מיפוי נכסים קריטיים ובניית מסגרת ניהול סיכונים בהתאם לתקנים בינלאומיים.</p>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.1s">
+          <div class="service-num">02</div>
+          <div class="service-icon">🤖</div>
+          <h3>AI Threat Detection</h3>
+          <p>זיהוי איומים בזמן אמת עם מודלי בינה מלאכותית. UEBA, anomaly detection, ותגובה אוטומטית לאירועים.</p>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.2s">
+          <div class="service-num">03</div>
+          <div class="service-icon">🔍</div>
+          <h3>Penetration Testing</h3>
+          <p>בדיקות חדירה מקיפות: Black/White/Grey box. Web, Mobile, Network, Social Engineering.</p>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.3s">
+          <div class="service-num">04</div>
+          <div class="service-icon">📋</div>
+          <h3>Compliance & GRC</h3>
+          <p>הכנה לתקנים: ISO 27001, SOC2, GDPR, HIPAA, PCI-DSS, רגולציות בנק ישראל וביטוח לאומי.</p>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.4s">
+          <div class="service-num">05</div>
+          <div class="service-icon">🚨</div>
+          <h3>Incident Response</h3>
+          <p>תגובה מהירה לאירועי סייבר 24/7. Forensics, Containment, Recovery, Lessons Learned.</p>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.5s">
+          <div class="service-num">06</div>
+          <div class="service-icon">🎓</div>
+          <h3>Security Awareness</h3>
+          <p>הכשרות מותאמות לעובדים. סימולציות פישינג, Red Team exercises, בניית תרבות אבטחה ארגונית.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section id="clients">
+    <div class="container">
+      <div class="clients-title">TRUSTED BY LEADING ORGANIZATIONS</div>
+      <div style="overflow:hidden">
+        <div class="logos-track">
+          <div class="logo-item">BANK HAPOALIM</div>
+          <div class="logo-item">CISCO</div>
+          <div class="logo-item">CHECKPOINT</div>
+          <div class="logo-item">MINISTRY OF DEFENSE</div>
+          <div class="logo-item">MICROSOFT IL</div>
+          <div class="logo-item">DELOITTE</div>
+          <div class="logo-item">BANK HAPOALIM</div>
+          <div class="logo-item">CISCO</div>
+          <div class="logo-item">CHECKPOINT</div>
+          <div class="logo-item">MINISTRY OF DEFENSE</div>
+          <div class="logo-item">MICROSOFT IL</div>
+          <div class="logo-item">DELOITTE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI SECTION -->
+  <section id="ai-section">
+    <div class="container">
+      <div class="ai-grid">
+        <div class="reveal-left">
+          <div class="section-tag">AI SECURITY</div>
+          <h2 class="section-title">בינה מלאכותית בשירות ההגנה</h2>
+          <p class="section-sub" style="margin-bottom:40px">
+            שילוב מודלי AI מתקדמים ל-Threat Intelligence, זיהוי אנומליות, ואוטומציה של תגובה לאירועים — עשרות אלפי אירועים מנותחים בשנייה.
+          </p>
+          <div class="ai-features">
+            <div class="ai-feature reveal">
+              <div class="icon2">🧠</div>
+              <div>
+                <h4>Neural Threat Detection</h4>
+                <p>רשתות נוירונים עמוקות שמזהות דפוסי תקיפה בטרם נגרם נזק</p>
+              </div>
+            </div>
+            <div class="ai-feature reveal" style="transition-delay:0.1s">
+              <div class="icon2">⚡</div>
+              <div>
+                <h4>Real-Time Response Automation</h4>
+                <p>SOAR ו-AI מגיבים לאיומים בפחות מ-3 שניות ללא התערבות אנושית</p>
+              </div>
+            </div>
+            <div class="ai-feature reveal" style="transition-delay:0.2s">
+              <div class="icon2">🔮</div>
+              <div>
+                <h4>Predictive Intelligence</h4>
+                <p>חיזוי וקטורי תקיפה עתידיים על בסיס Dark Web intelligence ו-Threat Feeds</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal-right">
+          <div class="neural-canvas-wrap">
+            <canvas id="neural-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="container">
+      <div class="reveal" style="text-align:center;margin-bottom:60px">
+        <div class="section-tag" style="justify-content:center">HOW I WORK</div>
+        <h2 class="section-title">תהליך העבודה</h2>
+      </div>
+      <div class="process-steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <h4>Discovery</h4>
+          <p>מיפוי מלא של הסביבה, הנכסים הקריטיים ומשטח התקיפה</p>
+        </div>
+        <div class="step reveal" style="transition-delay:0.15s">
+          <div class="step-num">02</div>
+          <h4>Analysis</h4>
+          <p>הערכת סיכונים מעמיקה עם כלי AI ומתודולוגיות מוכחות</p>
+        </div>
+        <div class="step reveal" style="transition-delay:0.3s">
+          <div class="step-num">03</div>
+          <h4>Strategy</h4>
+          <p>בניית אסטרטגיית הגנה מותאמת לארגון, לתקציב ולרגולציה</p>
+        </div>
+        <div class="step reveal" style="transition-delay:0.45s">
+          <div class="step-num">04</div>
+          <h4>Execution</h4>
+          <p>יישום, הטמעה, הכשרת צוותים ובניית SOC פנים-ארגוני</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="reveal" style="text-align:center">
+        <div class="section-tag" style="justify-content:center">GET IN TOUCH</div>
+        <h2 class="section-title">מוכן לאבטח את הארגון שלך?</h2>
+        <p class="section-sub" style="margin:0 auto">בוא נדבר. ייעוץ ראשוני ללא עלות.</p>
+      </div>
+      <div class="contact-wrap reveal">
+        <div style="font-family:'Orbitron',monospace;font-size:12px;color:var(--neon);letter-spacing:0.3em;margin-bottom:20px;">
+          SECURE_CHANNEL // ENCRYPTED
+        </div>
+        <h3 style="font-size:28px;font-weight:900;margin-bottom:10px">מוטי נווה</h3>
+        <p style="color:rgba(255,255,255,0.5);font-size:16px">מנכ"ל | ראש תחום אבטחת מידע</p>
+        <div class="contact-channels">
+          <a href="tel:+972-50-0000000" class="channel-btn">
+            <span class="icon3">📞</span>
+            <span>050-0000000</span>
+          </a>
+          <a href="mailto:moti@cyber-defense.co.il" class="channel-btn">
+            <span class="icon3">✉️</span>
+            <span>שלח מייל</span>
+          </a>
+          <a href="https://linkedin.com" class="channel-btn">
+            <span class="icon3">💼</span>
+            <span>LinkedIn</span>
+          </a>
+          <a href="https://wa.me/972500000000" class="channel-btn">
+            <span class="icon3">💬</span>
+            <span>WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /sections -->
+
+<footer>
+  <span>MOTI NAVE CISO</span> // ALL SYSTEMS SECURE // &copy; 2026
+</footer>
+
+<script>
+// ─── PRELOADER ───────────────────────────────────────
+const msgs = [
+  'LOADING SECURE ENVIRONMENT...',
+  'INITIALIZING ENCRYPTION...',
+  'CONNECTING THREAT FEEDS...',
+  'AI MODELS LOADED...',
+  'SYSTEM READY'
+];
+let msgIdx = 0;
+const bar = document.getElementById('preload-bar');
+const statusEl = document.getElementById('preload-status');
+const preloader = document.getElementById('preloader');
+
+setTimeout(() => { bar.style.width = '30%'; statusEl.textContent = msgs[1]; }, 200);
+setTimeout(() => { bar.style.width = '60%'; statusEl.textContent = msgs[2]; }, 700);
+setTimeout(() => { bar.style.width = '85%'; statusEl.textContent = msgs[3]; }, 1100);
+setTimeout(() => { bar.style.width = '100%'; statusEl.textContent = msgs[4]; }, 1500);
+setTimeout(() => {
+  preloader.style.transition = 'opacity 0.6s';
+  preloader.style.opacity = '0';
+  setTimeout(() => preloader.style.display = 'none', 600);
+}, 1900);
+
+// ─── CURSOR GLOW ────────────────────────────────────
+const cursorGlow = document.getElementById('cursor-glow');
+document.addEventListener('mousemove', e => {
+  cursorGlow.style.left = e.clientX + 'px';
+  cursorGlow.style.top = e.clientY + 'px';
+});
+
+// ─── MATRIX RAIN ────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, cols, drops;
+  function init() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    const fs = 14;
+    cols = Math.floor(w / fs);
+    drops = Array(cols).fill(1);
+  }
+  init();
+  window.addEventListener('resize', init);
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01';
+  function draw() {
+    ctx.fillStyle = 'rgba(1,4,8,0.05)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#00f5ff';
+    ctx.font = '14px monospace';
+    for (let i = 0; i < cols; i++) {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 14, drops[i] * 14);
+      if (drops[i] * 14 > h && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 50);
+})();
+
+// ─── THREE.JS PARTICLE NEURAL NETWORK ───────────────
+(function(){
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  // Particles
+  const count = 2000;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    pos[i*3] = (Math.random() - 0.5) * 20;
+    pos[i*3+1] = (Math.random() - 0.5) * 20;
+    pos[i*3+2] = (Math.random() - 0.5) * 10;
+    const t = Math.random();
+    colors[i*3] = t < 0.5 ? 0 : 0.48;
+    colors[i*3+1] = t < 0.5 ? 0.96 : 0.18;
+    colors[i*3+2] = t < 0.5 ? 1 : 1;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.PointsMaterial({ size: 0.04, vertexColors: true, transparent: true, opacity: 0.8 });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  // Connection lines (sparse)
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x00f5ff, transparent: true, opacity: 0.05 });
+  for (let i = 0; i < 60; i++) {
+    const g = new THREE.BufferGeometry();
+    const lp = new Float32Array(6);
+    lp[0] = (Math.random()-0.5)*20; lp[1]=(Math.random()-0.5)*20; lp[2]=(Math.random()-0.5)*10;
+    lp[3] = lp[0]+(Math.random()-0.5)*4; lp[4]=lp[1]+(Math.random()-0.5)*4; lp[5]=lp[2];
+    g.setAttribute('position', new THREE.BufferAttribute(lp, 3));
+    scene.add(new THREE.Line(g, lineMat));
+  }
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+  });
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.003;
+    points.rotation.y = t * 0.1 + mouseX;
+    points.rotation.x = mouseY * 0.5;
+    // Breathe
+    mat.opacity = 0.5 + Math.sin(t) * 0.3;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+// ─── NEURAL NETWORK CANVAS (2D) ──────────────────────
+(function(){
+  const canvas = document.getElementById('neural-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  function resize() {
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const nodes = [];
+  for (let i = 0; i < 40; i++) {
+    nodes.push({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
+      r: 2 + Math.random() * 3,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    t += 0.02;
+
+    // Connections
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i+1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          const alpha = (1 - dist/120) * 0.4;
+          const grad = ctx.createLinearGradient(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+          grad.addColorStop(0, `rgba(0,245,255,${alpha})`);
+          grad.addColorStop(1, `rgba(123,47,255,${alpha})`);
+          ctx.beginPath();
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 0.8;
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Nodes
+    nodes.forEach(n => {
+      n.x += n.vx; n.y += n.vy; n.pulse += 0.05;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+      const pulse = 0.5 + Math.sin(n.pulse) * 0.5;
+      // Glow
+      const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
+      g.addColorStop(0, `rgba(0,245,255,${0.8 * pulse})`);
+      g.addColorStop(1, 'rgba(0,245,255,0)');
+      ctx.beginPath();
+      ctx.fillStyle = g;
+      ctx.arc(n.x, n.y, n.r * 4, 0, Math.PI * 2);
+      ctx.fill();
+      // Core
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(0,245,255,${pulse})`;
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Data packets
+    if (Math.random() < 0.05) {
+      const a = nodes[Math.floor(Math.random()*nodes.length)];
+      const b = nodes[Math.floor(Math.random()*nodes.length)];
+      animatePacket(a.x, a.y, b.x, b.y);
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  function animatePacket(x1, y1, x2, y2) {
+    let p = 0;
+    function step() {
+      p += 0.05;
+      if (p > 1) return;
+      const x = x1 + (x2-x1) * p;
+      const y = y1 + (y2-y1) * p;
+      ctx.beginPath();
+      ctx.fillStyle = '#ff006e';
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+      requestAnimationFrame(step);
+    }
+    step();
+  }
+})();
+
+// ─── REVEAL ON SCROLL ───────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// ─── COUNT-UP ANIMATION ─────────────────────────────
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = 'true';
+      const target = parseInt(e.target.dataset.count);
+      let current = 0;
+      const step = target / 60;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        e.target.textContent = Math.floor(current);
+      }, 20);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
+
+// ─── TYPING EFFECT ───────────────────────────────────
+(function(){
+  const el = document.getElementById('typed-title');
+  const texts = [
+    'CHIEF INFORMATION SECURITY OFFICER',
+    'AI SECURITY STRATEGIST',
+    'CYBER DEFENSE EXPERT',
+    'TRUSTED CISO ADVISOR'
+  ];
+  let ti = 0, ci = 0, deleting = false;
+  function type() {
+    const text = texts[ti];
+    if (!deleting) {
+      el.textContent = text.slice(0, ++ci);
+      if (ci === text.length) { deleting = true; setTimeout(type, 2000); return; }
+    } else {
+      el.textContent = text.slice(0, --ci);
+      if (ci === 0) { deleting = false; ti = (ti+1) % texts.length; }
+    }
+    setTimeout(type, deleting ? 40 : 80);
+  }
+  setTimeout(type, 2500);
+})();
+
+// ─── NAV SCROLL EFFECT ───────────────────────────────
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.style.background = window.scrollY > 50
+    ? 'rgba(1,4,8,0.98)'
+    : 'linear-gradient(180deg,rgba(1,4,8,0.95) 0%, transparent 100%)';
+});
+</script>
+</body>
+</html>
