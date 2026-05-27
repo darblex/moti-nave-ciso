@@ -1,5 +1,15 @@
 #!/bin/sh
-# Replace PORT in nginx config
-envsubst '${PORT}' < /etc/nginx/conf.d/default.conf > /tmp/default.conf
-cp /tmp/default.conf /etc/nginx/conf.d/default.conf
+PORT=${PORT:-8080}
+cat > /etc/nginx/conf.d/default.conf << NGINX
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}
+NGINX
+echo "Starting nginx on port ${PORT}"
 nginx -g 'daemon off;'
